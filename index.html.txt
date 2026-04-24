@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Tahoma, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 380px;
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            color: #111827;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .checkbox-row input {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-row label {
+            margin: 0;
+            font-size: 14px;
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-btn:hover {
+            background: #2563eb;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: center;
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .user-panel {
+            display: none;
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 30px;
+        }
+
+        .user-panel.show {
+            display: block;
+        }
+
+        .user-info h3 {
+            color: #111827;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .user-info p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                margin: 10px;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="login-header">
+            <h2>تسجيل الدخول</h2>
+            <p>الرجاء إدخال بيانات حسابك</p>
+        </div>
+
+        <div id="loginForm">
+            <form>
+                <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" id="userPassword" required>
+                </div>
+
+                <div class="checkbox-row">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">تذكرني</label>
+                </div>
+
+                <div id="alertMsg" class="message"></div>
+
+                <button type="submit" class="login-btn">دخول</button>
+            </form>
+        </div>
+
+        <div id="userPanel" class="user-panel">
+            <div class="user-info">
+                <h3 id="displayName">المستخدم</h3>
+                <p id="displayEmail">-</p>
+                <p id="loginTime">-</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">خروج</button>
+        </div>
+
+        <a href="#" class="forgot-link" onclick="forgotPass()">نسيت كلمة المرور؟</a>
+    </div>
+
+    <script>
+        // تحميل بيانات المستخدم من الذاكرة
+        window.onload = function() {
+            checkLogin();
+        };
+
+        // فحص حالة تسجيل الدخول
+        function checkLogin() {
+            let userData = localStorage.getItem('loggedUser');
+            if (userData) {
+                userData = JSON.parse(userData);
+                showUserPanel(userData);
+            }
+        }
+
+        // تسجيل الدخول
+        document.querySelector('form').onsubmit = function(e) {
+            e.preventDefault();
+            
+            let email = document.getElementById('userEmail').value;
+            let password = document.getElementById('userPassword').value;
+            let remember = document.getElementById('remember').checked;
+
+            // التحقق من البيانات
+            if (!email || !password) {
+                showAlert('الرجاء إدخال جميع البيانات', 'error');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                showAlert('البريد الإلكتروني غير صحيح', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showAlert('كلمة المرور قصيرة جداً', 'error');
+                return;
+            }
+
+            // حفظ البيانات
+            let userData = {
+                email: email,
+                time: new Date().toLocaleString('ar-EG'),
+                remember: remember
+            };
+
+            localStorage.setItem('loggedUser', JSON.stringify(userData));
+            showUserPanel(userData);
+            showAlert('تم تسجيل الدخول بنجاح', 'success');
+        };
+
+        // إظهار لوحة المستخدم
+        function showUserPanel(data) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('userPanel').classList.add('show');
+            
+            document.getElementById('displayName').textContent = data.email.split('@')[0];
+            document.getElementById('displayEmail').textContent = data.email;
+            document.getElementById('loginTime').textContent = data.time;
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('loggedUser');
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('userPanel').classList.remove('show');
+            document.querySelector('form').reset();
+            showAlert('تم تسجيل الخروج', 'success');
+        }
+
+        // عرض رسائل التنبيه
+        function showAlert(msg, type) {
+            let alertEl = document.getElementById('alertMsg');
+            alertEl.textContent = msg;
+            alertEl.className = 'message ' + type;
+            alertEl.style.display = 'block';
+            
+            setTimeout(function() {
+                alertEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // نسيت كلمة المرور
+        function forgotPass() {
+            let email = document.getElementById('userEmail').value;
+            if (email) {
+                showAlert('تم إرسال رابط إعادة التعيين لبريدك', 'success');
+            } else {
+                showAlert('أدخل بريدك الإلكتروني أولاً', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
